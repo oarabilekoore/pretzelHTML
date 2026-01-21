@@ -1,0 +1,79 @@
+# pretzelHTML
+
+This is an experimental JavaScript framework designed to explore the intersection of Web Components, Signals, and JSX without relying on a Virtual DOM.
+
+The intent of this project is to understand how fine-grained reactivity can drive standard HTML Custom Elements directly, removing the abstraction layer typically found in libraries like React or Vue. It is a proof-of-concept, not a production-ready library.
+
+## The Concept
+
+Modern frameworks often rely on a Virtual DOM to determine what to update. pretzelHTML attempts to bypass this by binding reactive signals directly to DOM nodes.
+
+1. **Web Components:** Uses the native browser `customElements` API for component encapsulation and lifecycle.
+2. **Signals:** Implements a basic observer pattern. When a signal changes, it notifies only the specific subscribers (text nodes or attributes) linked to it.
+3. **JSX:** Transforms XML-like syntax into raw DOM operations (`document.createElement`) rather than Virtual DOM objects.
+
+## Core Mechanics
+
+* **No Diffing:** There is no reconciliation process. Updates are O(1) time complexity because the signal knows exactly which node to modify.
+* **Native Standards:** Components are just classes that extend `HTMLElement`.
+* **Decorators:** Uses TypeScript decorators (`@customElement`, `@state`) to reduce boilerplate.
+
+## Setup
+
+This project relies on Vite and TypeScript to handle JSX compilation and decorators.
+
+**tsconfig.json requirements:**
+
+```json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "jsx": "react",
+    "jsxFactory": "h"
+  }
+}
+
+```
+
+## Usage
+
+Components are defined as classes. State changes are handled by mutating properties decorated with `@signal`.
+
+```tsx
+/** @jsx h */
+import { h, PretzelComponent, customElement, state } from './pretzel';
+
+@customElement('simple-counter')
+class SimpleCounter extends PretzelComponent {
+  @state count = 0;
+
+  increment() {
+    this.count++;
+  }
+
+  render() {
+    return (
+      <div>
+        <p>Current count: {() => this.count}</p>
+        <button onclick={() => this.increment()}>Increment</button>
+      </div>
+    );
+  }
+}
+
+```
+
+## Limitations
+
+As this is an experiment, several features expected in modern tooling are intentionally absent:
+
+* **No List Reconciliation:** There is no keyed implementation for lists. Re-rendering arrays destroys and recreates DOM nodes.
+* **No Router:** Navigation logic is not included.
+* **No Error Boundaries:** There is no mechanism to catch errors in the render tree.
+* **No SSR:** This is strictly a client-side rendering library.
+
+## License
+
+MIT
+# pretzelHTML
