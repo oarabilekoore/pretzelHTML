@@ -4,6 +4,12 @@ This is an experimental JavaScript framework designed to explore the intersectio
 
 The intent of this project is to understand how fine-grained reactivity can drive standard HTML Custom Elements directly, removing the abstraction layer typically found in libraries like React or Vue. It is a proof-of-concept, not a production-ready library.
 
+## Project Philosophy
+
+This experiment acknowledges that it is **reinventing the wheel**. By combining TypeScript decorators, class-based Custom Elements, and JSX, the result naturally feels like **Stencil.js** or a "SolidJS-flavored" Angular.
+
+The goal isn't to create a better wheel, but to strip away the "magic" of established frameworks to see if a performant, portable UI can be built using only browser standards and a minimal reactivity engine.
+
 ## The Concept
 
 Modern frameworks often rely on a Virtual DOM to determine what to update. pretzelHTML attempts to bypass this by binding reactive signals directly to DOM nodes.
@@ -14,9 +20,13 @@ Modern frameworks often rely on a Virtual DOM to determine what to update. pretz
 
 ## Core Mechanics
 
-* **No Diffing:** There is no reconciliation process. Updates are O(1) time complexity because the signal knows exactly which node to modify.
+* **No Diffing:** There is no reconciliation process. Updates are  time complexity because the signal knows exactly which node to modify.
 * **Native Standards:** Components are just classes that extend `HTMLElement`.
-* **Decorators:** Uses TypeScript decorators (`@customElement`, `@state`) to reduce boilerplate.
+* **Decorators:** Uses TypeScript decorators (`@customElement`, `@signal`) to reduce boilerplate.
+
+---
+
+---
 
 ## Setup
 
@@ -42,11 +52,11 @@ Components are defined as classes. State changes are handled by mutating propert
 
 ```tsx
 /** @jsx h */
-import { h, PretzelComponent, customElement, state } from './pretzel';
+import { h, PretzelComponent, customElement, signal } from './pretzel';
 
 @customElement('simple-counter')
 class SimpleCounter extends PretzelComponent {
-  @state count = 0;
+  @signal count = 0;
 
   increment() {
     this.count++;
@@ -66,13 +76,14 @@ class SimpleCounter extends PretzelComponent {
 
 ## Limitations
 
-As this is an experiment, several features expected in modern tooling are intentionally absent:
+As this is an experiment, several features expected in modern tooling are intentionally absent or handled naively:
 
-* **No List Reconciliation:** There is no keyed implementation for lists. Re-rendering arrays destroys and recreates DOM nodes.
+* **Manual List Management:** While the library includes a functional `<For>` component, it lacks the sophisticated reconciliation algorithms found in mature frameworks.
 * **No Router:** Navigation logic is not included.
-* **No Error Boundaries:** There is no mechanism to catch errors in the render tree.
-* **No SSR:** This is strictly a client-side rendering library.
+* **No SSR:** This is strictly a client-side rendering library; SEO requires additional implementation of Declarative Shadow DOM.
 
 ## License
 
 MIT
+
+
